@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO Client</title>
+</head>
+<body>
+  <h1>Socket.IO Client</h1>
+  
+  <div id="messages"></div>
+  
+  <form id="message-form">
+    <input type="text" id="message-input" placeholder="Type your message...">
+    <button type="submit">Send</button>
+  </form>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+  <script>
+    // Connect to the server
+    const socket = io("http://localhost:8000");
+
+    // Display received messages
+    const messagesDiv = document.getElementById('messages');
+    function addMessage(message) {
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      messagesDiv.appendChild(messageElement);
+    }
+
+    // Handle form submission
+    const messageForm = document.getElementById('message-form');
+    const messageInput = document.getElementById('message-input');
+    messageForm.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent the default form submission
+      const message = messageInput.value.trim();
+      if (message !== '') {
+        socket.emit('ask', message); // Send the message to the server
+        messageInput.value = ''; // Clear the input field
+      }
+    });
+
+    // Receive messages from the server
+    socket.on('response', (message) => {
+      addMessage(message.msg);
+      console.log(message);
+      console.log(message.msg);
+    });
+  </script>
+</body>
+</html>
